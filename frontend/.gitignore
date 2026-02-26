@@ -25,3 +25,7 @@ dist-ssr
 
 .vercel
 .env*.local
+
+# Testing and Linting
+coverage/
+lint_output.txt
