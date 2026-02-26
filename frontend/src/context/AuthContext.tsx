@@ -5,40 +5,47 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   login: () => void;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
-
-const MOCK_USER: User = {
-  uid: 'mock-user-001',
-  displayName: 'Alex Trader',
-  email: 'alex@mrkts.app',
-  photoURL: undefined,
-};
-
-const STORAGE_KEY = 'mrkts_auth';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // On mount, check if there's an active session with the backend
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      setUser(JSON.parse(stored));
-    }
-    setIsLoading(false);
+    fetch('/api/auth/me', { credentials: 'include' })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.success && data.user) {
+          setUser({
+            uid: data.user._id,
+            displayName: data.user.displayName,
+            email: data.user.email,
+            photoURL: data.user.photoURL,
+          });
+        }
+      })
+      .catch(() => {
+        // Not authenticated — that's fine
+      })
+      .finally(() => setIsLoading(false));
   }, []);
 
+  // Redirect browser to Google OAuth — backend handles the rest
   const login = () => {
-    setUser(MOCK_USER);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(MOCK_USER));
+    window.location.href = '/api/auth/google';
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem(STORAGE_KEY);
+  // Hit the backend logout endpoint, then clear local state
+  const logout = async () => {
+    try {
+      await fetch('/api/auth/logout', { credentials: 'include' });
+    } finally {
+      setUser(null);
+    }
   };
 
   return (

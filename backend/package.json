@@ -1,0 +1,29 @@
+{
+  "name": "mrkts-backend",
+  "version": "1.0.0",
+  "description": "mrkts financial news aggregator backend API",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "connect-mongo": "^6.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "groq-sdk": "^0.37.0",
+    "mongoose": "^9.2.2",
+    "node-cron": "^4.2.1",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "rss-parser": "^3.13.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

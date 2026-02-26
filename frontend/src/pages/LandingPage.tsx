@@ -94,7 +94,7 @@ export function LandingPage() {
               <Link
                 to="/login"
                 id="hero-cta-btn"
-                className="inline-block px-8 py-4 bg-bullish text-white font-black text-sm uppercase tracking-widest border-2 border-bullish neo-shadow-bullish hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all duration-100"
+                className="inline-block px-8 py-4 bg-bullish text-white font-black text-sm uppercase tracking-widest border-2 border-bullish neo-shadow hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all duration-100"
               >
                 Get Started — It's Free
               </Link>
