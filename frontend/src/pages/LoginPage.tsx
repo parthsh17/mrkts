@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthStore';
+import { useAuth } from '../context/AuthStoreContext';
 
 export function LoginPage() {
   const { login, user, isLoading } = useAuth();

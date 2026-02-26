@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import { Header } from '../components/Header';
 import { FilterBar } from '../components/FilterBar';
 import { NewsCard } from '../components/NewsCard';
-import type { NewsItem, Sentiment } from '../lib/types';
+import type { NewsItem, Sentiment, RawArticle } from '../lib/types';
 
 type FilterValue = Sentiment | 'All';
 
@@ -22,18 +22,21 @@ export function DashboardPage() {
 
   // Stable ref so the interval always sees the latest filter without re-subscribing
   const activeFilterRef = useRef<FilterValue>(activeFilter);
-  activeFilterRef.current = activeFilter;
+  
+  useEffect(() => {
+    activeFilterRef.current = activeFilter;
+  }, [activeFilter]);
 
-  const fetchLastEnriched = () => {
+  const fetchLastEnriched = useCallback(() => {
     fetch(`${API_BASE}/api/articles/last-enriched`, { credentials: 'include' })
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (data?.lastEnrichedAt) setLastEnrichedAt(new Date(data.lastEnrichedAt));
       })
       .catch(() => {});
-  };
+  }, []);
 
-  const fetchFeed = (filter: FilterValue, showLoading = false) => {
+  const fetchFeed = useCallback((filter: FilterValue, showLoading = false) => {
     const params = new URLSearchParams({ page: '1' });
     if (filter !== 'All') params.set('sentiment', filter);
 
@@ -43,7 +46,6 @@ export function DashboardPage() {
     }
 
     fetch(`${API_BASE}/api/articles/feed?${params.toString()}`, { credentials: 'include' })
-
       .then((res) => {
         if (res.status === 401) { navigate('/login'); return null; }
         if (!res.ok) throw new Error('Failed to fetch articles');
@@ -51,7 +53,7 @@ export function DashboardPage() {
       })
       .then((data) => {
         if (!data) return;
-        const mapped: NewsItem[] = (data.articles ?? []).map((a: any) => ({
+        const mapped: NewsItem[] = (data.articles ?? []).map((a: RawArticle) => ({
           id: a._id,
           source: a.source,
           originalTitle: a.title,
@@ -67,17 +69,13 @@ export function DashboardPage() {
       })
       .catch((err) => setError(err.message))
       .finally(() => setIsLoading(false));
-  };
+  }, [navigate]);
 
   // Initial load + re-fetch when filter changes
   useEffect(() => {
     fetchFeed(activeFilter, true);
-  }, [activeFilter]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Fetch last-enriched timestamp on mount
-  useEffect(() => {
     fetchLastEnriched();
-  }, []);
+  }, [activeFilter, fetchFeed, fetchLastEnriched]);
 
   // Auto-refresh every 5 minutes (silent — no loading spinner)
   useEffect(() => {
@@ -86,7 +84,8 @@ export function DashboardPage() {
       fetchLastEnriched();
     }, POLL_INTERVAL_MS);
     return () => clearInterval(id);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchFeed, fetchLastEnriched]);
 
   const counts = useMemo(() => ({
     Bullish: articles.filter((n) => n.sentiment === 'Bullish').length,

@@ -17,3 +17,19 @@ export interface User {
   email: string;
   photoURL?: string;
 }
+
+export interface RawArticle {
+  _id: string;
+  source: string;
+  title: string;
+  originalUrl: string;
+  publishedAt: string;
+  sentiment: Sentiment;
+  summaryPoints?: [string, string, string];
+  actionableInsight?: string;
+}
+
+export interface NewsItemResponse {
+  articles: RawArticle[];
+  success: boolean;
+}
