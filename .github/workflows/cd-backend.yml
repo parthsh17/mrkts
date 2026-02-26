@@ -24,6 +24,11 @@ jobs:
       #   2. Copy the URL and add it as GitHub Secret: RENDER_DEPLOY_HOOK_URL
       - name: Trigger Render deploy
         run: |
+          if [ -z "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" ]; then
+            echo "❌ Error: RENDER_DEPLOY_HOOK_URL is missing or empty."
+            echo "Please add it to GitHub Settings > Secrets and variables > Actions"
+            exit 1
+          fi
           curl -s -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" \
             -o /dev/null \
             -w "HTTP status: %{http_code}\n"

@@ -34,10 +34,14 @@ jobs:
         run: npm run build
 
       # Deploy to Vercel using the official Vercel action.
-      # Required GitHub secrets (Settings → Secrets → Actions):
-      #   VERCEL_TOKEN        — from vercel.com/account/tokens
-      #   VERCEL_ORG_ID       — from .vercel/project.json after running `vercel link`
-      #   VERCEL_PROJECT_ID   — from .vercel/project.json after running `vercel link`
+      - name: Check Vercel secrets
+        run: |
+          if [ -z "${{ secrets.VERCEL_TOKEN }}" ] || [ -z "${{ secrets.VERCEL_ORG_ID }}" ] || [ -z "${{ secrets.VERCEL_PROJECT_ID }}" ]; then
+            echo "❌ Error: One or more Vercel secrets (VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID) are missing."
+            echo "Please add them to GitHub Settings > Secrets and variables > Actions"
+            exit 1
+          fi
+
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v25
         with:
