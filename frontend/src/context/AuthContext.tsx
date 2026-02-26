@@ -8,6 +8,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
 }
 
+const AuthContext = createContext<AuthContextType | null>(null);
 const API_BASE = import.meta.env.VITE_API_URL || '';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
