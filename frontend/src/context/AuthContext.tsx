@@ -49,7 +49,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-
   return (
     <AuthContext.Provider value={{ user, isLoading, login, logout }}>
       {children}
@@ -62,3 +61,4 @@ export function useAuth(): AuthContextType {
   if (!ctx) throw new Error('useAuth must be used within <AuthProvider>');
   return ctx;
 }
+
