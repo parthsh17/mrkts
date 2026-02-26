@@ -8,7 +8,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | null>(null);
+const API_BASE = import.meta.env.VITE_API_URL || '';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -16,7 +16,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // On mount, check if there's an active session with the backend
   useEffect(() => {
-    fetch('/api/auth/me', { credentials: 'include' })
+    fetch(`${API_BASE}/api/auth/me`, { credentials: 'include' })
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (data?.success && data.user) {
@@ -36,17 +36,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Redirect browser to Google OAuth — backend handles the rest
   const login = () => {
-    window.location.href = '/api/auth/google';
+    window.location.href = `${API_BASE}/api/auth/google`;
   };
 
   // Hit the backend logout endpoint, then clear local state
   const logout = async () => {
     try {
-      await fetch('/api/auth/logout', { credentials: 'include' });
+      await fetch(`${API_BASE}/api/auth/logout`, { credentials: 'include' });
     } finally {
       setUser(null);
     }
   };
+
 
   return (
     <AuthContext.Provider value={{ user, isLoading, login, logout }}>

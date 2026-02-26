@@ -10,6 +10,8 @@ type FilterValue = Sentiment | 'All';
 
 const POLL_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 
+const API_BASE = import.meta.env.VITE_API_URL || '';
+
 export function DashboardPage() {
   const navigate = useNavigate();
   const [articles, setArticles] = useState<NewsItem[]>([]);
@@ -23,7 +25,7 @@ export function DashboardPage() {
   activeFilterRef.current = activeFilter;
 
   const fetchLastEnriched = () => {
-    fetch('/api/articles/last-enriched', { credentials: 'include' })
+    fetch(`${API_BASE}/api/articles/last-enriched`, { credentials: 'include' })
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (data?.lastEnrichedAt) setLastEnrichedAt(new Date(data.lastEnrichedAt));
@@ -40,7 +42,8 @@ export function DashboardPage() {
       setError(null);
     }
 
-    fetch(`/api/articles/feed?${params.toString()}`, { credentials: 'include' })
+    fetch(`${API_BASE}/api/articles/feed?${params.toString()}`, { credentials: 'include' })
+
       .then((res) => {
         if (res.status === 401) { navigate('/login'); return null; }
         if (!res.ok) throw new Error('Failed to fetch articles');
