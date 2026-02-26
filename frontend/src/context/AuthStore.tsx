@@ -1,23 +1,23 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { User } from '../lib/types';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import type { User } from "../lib/types";
 
-interface AuthContextType {
+export interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   login: () => void;
   logout: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | null>(null);
-const API_BASE = import.meta.env.VITE_API_URL || '';
+export const AuthStoreContext = createContext<AuthContextType | null>(null);
+
+const API_BASE = import.meta.env.VITE_API_URL || "";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // On mount, check if there's an active session with the backend
   useEffect(() => {
-    fetch(`${API_BASE}/api/auth/me`, { credentials: 'include' })
+    fetch(`${API_BASE}/api/auth/me`, { credentials: "include" })
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (data?.success && data.user) {
@@ -29,36 +29,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           });
         }
       })
-      .catch(() => {
-        // Not authenticated — that's fine
-      })
+      .catch(() => {})
       .finally(() => setIsLoading(false));
   }, []);
 
-  // Redirect browser to Google OAuth — backend handles the rest
   const login = () => {
     window.location.href = `${API_BASE}/api/auth/google`;
   };
 
-  // Hit the backend logout endpoint, then clear local state
   const logout = async () => {
     try {
-      await fetch(`${API_BASE}/api/auth/logout`, { credentials: 'include' });
+      await fetch(`${API_BASE}/api/auth/logout`, { credentials: "include" });
     } finally {
       setUser(null);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout }}>
+    <AuthStoreContext.Provider value={{ user, isLoading, login, logout }}>
       {children}
-    </AuthContext.Provider>
+    </AuthStoreContext.Provider>
   );
 }
 
 export function useAuth(): AuthContextType {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within <AuthProvider>');
+  const ctx = useContext(AuthStoreContext);
+  if (!ctx) throw new Error("useAuth must be used within <AuthProvider>");
   return ctx;
 }
-
