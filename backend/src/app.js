@@ -13,6 +13,9 @@ const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 
+// Required for Render/Vercel proxies to handle cookies/HTTPS correctly
+app.set('trust proxy', 1);
+
 // ── CORS ────────────────────────────────────────────────────────────────────
 app.use(
   cors({
