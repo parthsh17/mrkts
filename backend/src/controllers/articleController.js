@@ -1,7 +1,7 @@
 const Article = require('../models/Article');
 const { getLastEnrichedAt } = require('../workers/ingestionWorker');
 
-const FEED_LIMIT = 6; // Show only the 6 most-recently enriched articles
+const FEED_LIMIT = 5; // Show only the 5 most-recently enriched articles
 
 /**
  * GET /api/articles/feed

@@ -30,9 +30,9 @@ const FEATURES = [
 export function LandingPage() {
   return (
     <main className="min-h-screen bg-[#18181b] overflow-x-hidden">
-      {/* ── NAVBAR ──#18181bff */}
+      {/* ── NAVBAR ── */}
       <nav className="border-b-2 border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between" style={{background: '#0f0fc8ff'}}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between" style={{background: '#18181bff'}}>
           <span className="font-black text-xl uppercase tracking-tighter text-bullish border-2 border-bullish neo-shadow-brand px-1.5 py-0.5">
             mrkts
           </span>
